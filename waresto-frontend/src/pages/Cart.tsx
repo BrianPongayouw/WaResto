@@ -43,7 +43,7 @@ const Cart: React.FC = () => {
         return {
           menuId: cartItem.menuId,
           name: item?.name || 'Unknown',
-          price: item?.price || 0,
+          price: item?.price ? Number(item.price) : 0,
           quantity: cartItem.quantity,
           options: cartItem.options,
         };
@@ -53,10 +53,10 @@ const Cart: React.FC = () => {
 
       const orderData = {
         customerName,
-        type: orderType,
-        specialNote,
+        type: orderType === 'takeaway' ? 'take_away' : 'dine_in',
+        specialNote: specialNote || undefined,
         items,
-        tableId: selectedTableId,
+        tableId: selectedTableId && selectedTableId !== '' ? selectedTableId : undefined,
         tableNumber: selectedTable?.number || '',
       };
 
@@ -264,10 +264,10 @@ const Cart: React.FC = () => {
         {/* Footer Action */}
         <div className="pt-6 mt-auto">
           <button
-            disabled={!customerName || !selectedTableId || cart.length === 0 || isSubmitting}
+            disabled={!customerName || (orderType === 'dine_in' && !selectedTableId) || cart.length === 0 || isSubmitting}
             onClick={handleCreateOrder}
             className={`w-full py-4 font-black text-xs uppercase tracking-[0.2em] transition-all rounded-2xl flex items-center justify-center gap-2 ${
-              !customerName || !selectedTableId || cart.length === 0 || isSubmitting
+              !customerName || (orderType === 'dine_in' && !selectedTableId) || cart.length === 0 || isSubmitting
               ? 'bg-[#e0e0e0] text-white cursor-not-allowed'
               : 'bg-[#b7120d] text-white hover:bg-[#a0100b] shadow-lg shadow-red-900/20 active:scale-[0.98]'
             }`}

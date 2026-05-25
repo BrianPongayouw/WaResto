@@ -80,20 +80,31 @@ const CashierDashboard: React.FC = () => {
     }
   };
 
+  // Helper to parse timestamps returned by the database.
+  // The PostgreSQL TIMESTAMP (without timezone) column stores local time (e.g. 00:44).
+  // When serialized by Express/pg, it gets appended with a 'Z' (e.g. 00:44Z), which is treated as UTC
+  // by the browser's new Date() and shifted by another +7 hours to 07:44 local time.
+  // Stripping the 'Z' forces the browser to parse it as local time, restoring correct synchronization.
+  const parseTimestamp = (ts: string) => {
+    if (!ts) return new Date();
+    const cleanTs = typeof ts === 'string' && ts.endsWith('Z') ? ts.slice(0, -1) : ts;
+    return new Date(cleanTs);
+  };
+
   // Format timestamp from createdAt
   const formatTime = (ts: string) => {
     if (!ts) return '--:--';
-    return new Date(ts).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    return parseTimestamp(ts).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   };
 
   const formatDate = (ts: string) => {
     if (!ts) return '-';
-    return new Date(ts).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+    return parseTimestamp(ts).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
   };
 
   const getTimeAgo = (ts: string) => {
     if (!ts) return '-';
-    const diff = Math.floor((Date.now() - new Date(ts).getTime()) / 60000);
+    const diff = Math.floor((Date.now() - parseTimestamp(ts).getTime()) / 60000);
     if (diff < 1) return 'Baru saja';
     if (diff < 60) return `${diff} mnt lalu`;
     return `${Math.floor(diff / 60)} jam lalu`;
@@ -306,7 +317,21 @@ const CashierDashboard: React.FC = () => {
                         ) : (
                           <span className="bg-[#fff4f4] text-[#b7120d] text-xs font-black w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0">{item.quantity}</span>
                         )}
-                        <span className="text-sm font-medium truncate">{item.name}</span>
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-sm font-medium truncate">{item.name}</span>
+                          {item.options && Object.keys(item.options).length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-0.5">
+                              {Object.entries(item.options).map(([key, value]) => (
+                                <span
+                                  key={key}
+                                  className="text-[9px] font-bold bg-red-50 text-[#b7120d] border border-[#ffe1e3] px-1.5 py-0.5 rounded-full"
+                                >
+                                  {String(value)}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div className="flex items-center gap-1">
                         <span className="text-[10px] font-bold opacity-40">Rp {(Number(item.price) * item.quantity).toLocaleString('id-ID')}</span>

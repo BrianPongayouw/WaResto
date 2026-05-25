@@ -4,25 +4,19 @@ import { eq, and } from 'drizzle-orm';
 
 export class MenuService {
   async getAll(categoryId?: string) {
-    const query = db
-      .select({
-        id: menus.id,
-        name: menus.name,
-        description: menus.description,
-        price: menus.price,
-        categoryId: menus.categoryId,
-        category: categories.name,
-        imageUrl: menus.imageUrl,
-        isAvailable: menus.isAvailable,
-        createdAt: menus.createdAt,
-      })
-      .from(menus)
-      .leftJoin(categories, eq(menus.categoryId, categories.id));
+    const result = await db.query.menus.findMany({
+      with: {
+        options: true,
+        category: true,
+      },
+      where: categoryId ? eq(menus.categoryId, categoryId) : undefined,
+    });
 
-    if (categoryId) {
-      return await query.where(eq(menus.categoryId, categoryId));
-    }
-    return await query;
+    // Flatten category name to match the shape the frontend expects
+    return result.map(menu => ({
+      ...menu,
+      category: menu.category?.name ?? null,
+    }));
   }
 
   async getById(id: string) {

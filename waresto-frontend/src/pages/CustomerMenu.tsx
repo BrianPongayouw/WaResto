@@ -57,7 +57,11 @@ const CustomerMenu: React.FC = () => {
       const defaults: Record<string, string> = {};
       item.options.forEach(opt => {
         if (opt.choices.length > 0) {
-          defaults[opt.name] = opt.choices[0];
+          const firstChoice = opt.choices[0];
+          const choiceName = typeof firstChoice === 'object' && firstChoice !== null && 'name' in firstChoice
+            ? (firstChoice as any).name
+            : String(firstChoice);
+          defaults[opt.name] = choiceName;
         }
       });
       setCurrentOptions(defaults);
@@ -393,18 +397,21 @@ const CustomerMenu: React.FC = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     {option.choices.map((choice) => {
-                      const isSelected = currentOptions[option.name] === choice;
+                      const choiceName = typeof choice === 'object' && choice !== null && 'name' in choice
+                        ? (choice as any).name
+                        : String(choice);
+                      const isSelected = currentOptions[option.name] === choiceName;
                       return (
                         <button
-                          key={choice}
-                          onClick={() => setCurrentOptions(prev => ({ ...prev, [option.name]: choice }))}
+                          key={choiceName}
+                          onClick={() => setCurrentOptions(prev => ({ ...prev, [option.name]: choiceName }))}
                           className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${
                             isSelected 
                             ? 'border-[#b7120d] bg-red-50 text-[#b7120d]' 
                             : 'border-[#ffe1e3] hover:border-[#b7120d]/30'
                           }`}
                         >
-                          <span className="text-sm font-bold">{choice}</span>
+                          <span className="text-sm font-bold">{choiceName}</span>
                           {isSelected && <Check className="w-4 h-4" />}
                         </button>
                       );

@@ -42,6 +42,21 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchMenu();
   }, []);
 
+  // Clean up stale cart items from localStorage/state if they don't exist in the active menuItems
+  useEffect(() => {
+    if (menuItems.length > 0) {
+      setCart(prev => {
+        const validCart = prev.filter(cartItem =>
+          menuItems.some(item => item.id === cartItem.menuId)
+        );
+        if (validCart.length !== prev.length) {
+          return validCart;
+        }
+        return prev;
+      });
+    }
+  }, [menuItems]);
+
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
