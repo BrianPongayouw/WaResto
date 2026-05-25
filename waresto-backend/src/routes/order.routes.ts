@@ -1,5 +1,8 @@
 import { Router } from 'express';
 import { OrderService } from '../services/OrderService.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { createOrderSchema, updateStatusSchema } from '../schemas/order.schema.js';
 
 const router = Router();
 const orderService = new OrderService();
@@ -23,7 +26,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', validate(createOrderSchema), async (req, res) => {
   try {
     const order = await orderService.create(req.body);
     res.status(201).json(order);
@@ -32,7 +35,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.patch('/:id/status', async (req, res) => {
+router.patch('/:id/status', requireAuth, validate(updateStatusSchema), async (req, res) => {
   try {
     const order = await orderService.updateStatus(req.params.id, req.body.status);
     res.json(order);
@@ -41,7 +44,7 @@ router.patch('/:id/status', async (req, res) => {
   }
 });
 
-router.patch('/:id/items', async (req, res) => {
+router.patch('/:id/items', requireAuth, async (req, res) => {
   try {
     const order = await orderService.updateItems(req.params.id, req.body.items);
     res.json(order);
@@ -50,7 +53,7 @@ router.patch('/:id/items', async (req, res) => {
   }
 });
 
-router.delete('/clear-history', async (req, res) => {
+router.delete('/clear-history', requireAuth, async (req, res) => {
   try {
     await orderService.clearHistory();
     res.json({ success: true, message: 'History cleared' });
@@ -59,7 +62,7 @@ router.delete('/clear-history', async (req, res) => {
   }
 });
 
-router.post('/start-new-day', async (req, res) => {
+router.post('/start-new-day', requireAuth, async (req, res) => {
   try {
     await orderService.startNewDay();
     res.json({ success: true, message: 'New day started' });

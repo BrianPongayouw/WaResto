@@ -1,5 +1,8 @@
 import { Router } from 'express';
 import { MenuService } from '../services/MenuService.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { createMenuSchema, updateMenuSchema } from '../schemas/menu.schema.js';
 
 const router = Router();
 const menuService = new MenuService();
@@ -24,7 +27,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, validate(createMenuSchema), async (req, res) => {
   try {
     const menu = await menuService.create(req.body);
     res.status(201).json(menu);
@@ -33,7 +36,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', requireAuth, validate(updateMenuSchema), async (req, res) => {
   try {
     const menu = await menuService.update(req.params.id, req.body);
     res.json(menu);
@@ -42,7 +45,7 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     await menuService.delete(req.params.id);
     res.status(204).send();

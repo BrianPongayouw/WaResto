@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { TableService } from '../services/TableService.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 const tableService = new TableService();
@@ -13,7 +14,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const table = await tableService.create(req.body);
     res.status(201).json(table);
@@ -22,7 +23,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', requireAuth, async (req, res) => {
   try {
     const table = await tableService.update(req.params.id, req.body);
     res.json(table);
@@ -31,7 +32,7 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     await tableService.delete(req.params.id);
     res.status(204).send();

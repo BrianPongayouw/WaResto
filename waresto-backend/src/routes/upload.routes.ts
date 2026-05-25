@@ -2,6 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
@@ -34,7 +35,7 @@ const upload = multer({
   }
 });
 
-router.post('/image', upload.single('image'), (req, res) => {
+router.post('/image', requireAuth, upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No image uploaded' });
   }

@@ -1,5 +1,8 @@
 import { Router } from 'express';
 import { CategoryService } from '../services/CategoryService.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { createCategorySchema, updateCategorySchema } from '../schemas/category.schema.js';
 
 const router = Router();
 const categoryService = new CategoryService();
@@ -13,7 +16,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, validate(createCategorySchema), async (req, res) => {
   try {
     const category = await categoryService.create(req.body);
     res.status(201).json(category);
@@ -22,7 +25,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', requireAuth, validate(updateCategorySchema), async (req, res) => {
   try {
     const category = await categoryService.update(req.params.id, req.body);
     res.json(category);
@@ -31,7 +34,7 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     await categoryService.delete(req.params.id);
     res.status(204).send();
