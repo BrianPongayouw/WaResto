@@ -179,13 +179,34 @@ const CustomerMenu: React.FC = () => {
               <div className="p-4 flex flex-col flex-1">
                 <h4 className="text-xs font-bold text-[#4d2127] line-clamp-1 mb-1">{item.name}</h4>
                 <p className="text-[#b7120d] font-black text-xs mt-auto">Rp {Number(item.price).toLocaleString('id-ID')}</p>
-                <button 
-                  onClick={() => handleAddItem(item)}
-                  className="mt-2 w-full bg-[#b7120d] text-white py-3 rounded-xl text-[11px] font-black shadow-md shadow-red-900/10 active:scale-95 transition-all hover:scale-[1.03] hover:shadow-xl hover:bg-[#a0100b] relative overflow-hidden group/btn"
-                >
-                  <span className="relative z-10">TAMBAH</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-shine"></div>
-                </button>
+                {getItemQuantity(item.id) === 0 ? (
+                  <button 
+                    onClick={() => handleAddItem(item)}
+                    className="mt-2 w-full bg-[#b7120d] text-white py-3 rounded-xl text-[11px] font-black shadow-md shadow-red-900/10 active:scale-95 transition-all hover:scale-[1.03] hover:shadow-xl hover:bg-[#a0100b] relative overflow-hidden group/btn"
+                  >
+                    <span className="relative z-10">TAMBAH</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-shine"></div>
+                  </button>
+                ) : (
+                  <div className="mt-2 w-full flex items-center justify-between bg-[#fff4f4] rounded-full p-1 border border-[#ffe1e3] animate-in fade-in zoom-in duration-300">
+                    <button 
+                      onClick={() => {
+                        const cartItem = cart.find(i => i.menuId === item.id);
+                        if (cartItem) updateCartQuantity(cartItem.cartId, -1);
+                      }}
+                      className="bg-white text-[#b7120d] p-2 rounded-full shadow-sm hover:bg-red-50"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="text-xs font-black min-w-[12px] text-center">{getItemQuantity(item.id)}</span>
+                    <button 
+                      onClick={() => handleAddItem(item)}
+                      className="bg-[#b7120d] text-white p-2 rounded-full shadow-md hover:bg-[#a0100b]"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}

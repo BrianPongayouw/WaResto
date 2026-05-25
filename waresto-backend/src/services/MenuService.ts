@@ -42,14 +42,18 @@ export class MenuService {
       const [newMenu] = await tx.insert(menus).values(menuData).returning();
       
       if (options && options.length > 0) {
-        const optionsWithMenuId = options.map((opt: any) => ({
-          ...opt,
-          menuId: newMenu.id,
-        }));
+        const optionsWithMenuId = options.map((opt: any) => {
+          const { id, ...rest } = opt;
+          return { ...rest, menuId: newMenu.id };
+        });
         await tx.insert(menuOptions).values(optionsWithMenuId);
       }
       
-      return newMenu;
+      const menuWithOptions = await tx.query.menus.findFirst({
+        where: eq(menus.id, newMenu.id),
+        with: { options: true },
+      });
+      return menuWithOptions;
     });
   }
 
@@ -67,15 +71,19 @@ export class MenuService {
         // Simple approach: delete all and re-insert
         await tx.delete(menuOptions).where(eq(menuOptions.menuId, id));
         if (options.length > 0) {
-          const optionsWithMenuId = options.map((opt: any) => ({
-            ...opt,
-            menuId: id,
-          }));
+          const optionsWithMenuId = options.map((opt: any) => {
+            const { id: optId, ...rest } = opt;
+            return { ...rest, menuId: id };
+          });
           await tx.insert(menuOptions).values(optionsWithMenuId);
         }
       }
 
-      return updatedMenu;
+      const menuWithOptions = await tx.query.menus.findFirst({
+        where: eq(menus.id, id),
+        with: { options: true },
+      });
+      return menuWithOptions;
     });
   }
 
