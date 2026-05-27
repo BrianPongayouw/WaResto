@@ -82,10 +82,10 @@ const AdminPanel: React.FC = () => {
   }, []);
   
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'menu', label: 'Kelola Menu', icon: LayoutGrid },
-    { id: 'tables', label: 'Status Meja', icon: Users },
-    { id: 'settings', label: 'Pengaturan', icon: Settings },
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3, badge: false },
+    { id: 'menu', label: 'Kelola Menu', icon: LayoutGrid, badge: false  },
+    { id: 'tables', label: 'Status Meja', icon: Users, badge: false },
+    { id: 'settings', label: 'Pengaturan', icon: Settings, badge: false },
   ];
 
   const activeIndex = navItems.findIndex(item => item.id === activeTab);
@@ -850,7 +850,7 @@ const AdminPanel: React.FC = () => {
           <button 
             onClick={async () => {
               try {
-                await authClient.post('/sign-out');
+                await apiClient.post('/sign-out');
               } catch (e) {}
               window.location.href = '/login';
             }}
