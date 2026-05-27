@@ -10,7 +10,7 @@ import { authClient } from './api/client';
 import { Loader2 } from 'lucide-react';
 import Topbar from './components/Topbar';
 
-const ProtectedRoute = ({ children, requireRole }: { children: React.ReactNode, requireRole?: 'admin' | 'kasir' }) => {
+const ProtectedRoute = ({ children, requireRole: _requireRole }: { children: React.ReactNode, requireRole?: 'admin' | 'kasir' }) => {
   const [authState, setAuthState] = useState<{ status: 'loading' | 'unauth' | 'auth', user?: any }>({ status: 'loading' });
   const location = useLocation();
 
