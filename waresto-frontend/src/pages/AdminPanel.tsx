@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import type { MenuItem, Order, Table, MenuOption } from '../data/mockData';
-import { 
-  Plus, Edit2, Trash2, LayoutGrid, List, BarChart3, Settings, 
-  LogOut, ChevronRight, Search, Filter, CheckCircle2, Clock, 
+import {
+  Plus, Edit2, Trash2, LayoutGrid, List, BarChart3, Settings,
+  LogOut, ChevronRight, Search, Filter, CheckCircle2, Clock,
   AlertCircle, Bell, BellRing, DollarSign, TrendingUp, Users, X, Upload, Image as ImageIcon, Loader2, RefreshCw
 } from 'lucide-react';
 import { menuService } from '../api/menuService';
@@ -18,7 +18,7 @@ const AdminPanel: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'menu' | 'orders' | 'tables' | 'settings'>('dashboard');
-  
+
   // Restaurant settings state
   const [restaurantSettings, setRestaurantSettings] = useState<any>(null);
   const [settingsHeroPreview, setSettingsHeroPreview] = useState('');
@@ -30,7 +30,7 @@ const AdminPanel: React.FC = () => {
   const [settingsCloseTime, setSettingsCloseTime] = useState('22:00');
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [settingsSaved, setSettingsSaved] = useState(false);
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -43,7 +43,7 @@ const AdminPanel: React.FC = () => {
           apiClient.get('/dashboard/stats').then(res => res.data),
           apiClient.get('/restaurant/profile').then(res => res.data).catch(() => null),
         ]);
-        
+
         setCategories(catsData.map((c: any) => c.name));
         setMenuItems(itemsData);
         setOrders(ordersData);
@@ -77,19 +77,19 @@ const AdminPanel: React.FC = () => {
       setOrders(prev => prev.map(x => x.id === o.id ? { ...x, ...o } : x));
       apiClient.get('/dashboard/stats').then(res => setStats(res.data));
     });
-    
+
     return () => eventSource.close();
   }, []);
-  
+
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3, badge: false },
-    { id: 'menu', label: 'Kelola Menu', icon: LayoutGrid, badge: false  },
+    { id: 'menu', label: 'Kelola Menu', icon: LayoutGrid, badge: false },
     { id: 'tables', label: 'Status Meja', icon: Users, badge: false },
     { id: 'settings', label: 'Pengaturan', icon: Settings, badge: false },
   ];
 
   const activeIndex = navItems.findIndex(item => item.id === activeTab);
-  
+
   // Filters for Menu
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('Semua');
@@ -129,9 +129,9 @@ const AdminPanel: React.FC = () => {
   const addTable = async () => {
     if (newTableNumber.trim() && !tables.find(t => t.number === newTableNumber.trim())) {
       try {
-        const newTable = await tableService.createTable({ 
-          number: newTableNumber.trim(), 
-          capacity: 4 
+        const newTable = await tableService.createTable({
+          number: newTableNumber.trim(),
+          capacity: 4
         });
         setTables([...tables, newTable]);
         setNewTableNumber('');
@@ -257,7 +257,7 @@ const AdminPanel: React.FC = () => {
   const addChoice = (groupId: string) => {
     setNewItem(prev => ({
       ...prev,
-      options: prev.options.map(opt => 
+      options: prev.options.map(opt =>
         opt.id === groupId ? { ...opt, choices: [...opt.choices, ''] } : opt
       )
     }));
@@ -266,10 +266,10 @@ const AdminPanel: React.FC = () => {
   const updateChoice = (groupId: string, choiceIndex: number, value: string) => {
     setNewItem(prev => ({
       ...prev,
-      options: prev.options.map(opt => 
-        opt.id === groupId ? { 
-          ...opt, 
-          choices: opt.choices.map((c, i) => i === choiceIndex ? value : c) 
+      options: prev.options.map(opt =>
+        opt.id === groupId ? {
+          ...opt,
+          choices: opt.choices.map((c, i) => i === choiceIndex ? value : c)
         } : opt
       )
     }));
@@ -278,10 +278,10 @@ const AdminPanel: React.FC = () => {
   const removeChoice = (groupId: string, choiceIndex: number) => {
     setNewItem(prev => ({
       ...prev,
-      options: prev.options.map(opt => 
-        opt.id === groupId ? { 
-          ...opt, 
-          choices: opt.choices.filter((_, i) => i !== choiceIndex) 
+      options: prev.options.map(opt =>
+        opt.id === groupId ? {
+          ...opt,
+          choices: opt.choices.filter((_, i) => i !== choiceIndex)
         } : opt
       )
     }));
@@ -306,7 +306,7 @@ const AdminPanel: React.FC = () => {
 
     try {
       await menuService.updateMenu(id, { isAvailable: !item.isAvailable });
-      setMenuItems(prev => prev.map(item => 
+      setMenuItems(prev => prev.map(item =>
         item.id === id ? { ...item, isAvailable: !item.isAvailable } : item
       ));
     } catch (err) {
@@ -317,7 +317,7 @@ const AdminPanel: React.FC = () => {
   const filteredMenu = menuItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = filterCategory === 'Semua' || item.category === filterCategory;
-    const matchesStatus = filterStatus === 'Semua' || 
+    const matchesStatus = filterStatus === 'Semua' ||
       (filterStatus === 'Aktif' ? item.isAvailable : !item.isAvailable);
     return matchesSearch && matchesCategory && matchesStatus;
   });
@@ -325,7 +325,7 @@ const AdminPanel: React.FC = () => {
 
   const renderDashboard = () => {
     if (!stats) return <div className="flex items-center justify-center p-20"><Loader2 className="w-8 h-8 animate-spin text-[#b7120d]" /></div>;
-    
+
     return (
       <div className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -339,9 +339,8 @@ const AdminPanel: React.FC = () => {
                 <h3 className="text-2xl font-black font-plus-jakarta">Rp {Number(stats.todayRevenue || 0).toLocaleString('id-ID')}</h3>
               </div>
             </div>
-            <div className={`flex items-center gap-2 text-xs font-bold w-fit px-2 py-1 rounded-full ${
-              (stats.revenueGrowth || 0) >= 0 ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'
-            }`}>
+            <div className={`flex items-center gap-2 text-xs font-bold w-fit px-2 py-1 rounded-full ${(stats.revenueGrowth || 0) >= 0 ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'
+              }`}>
               <TrendingUp className="w-3 h-3" />
               <span>{(stats.revenueGrowth || 0) >= 0 ? '+' : ''}{stats.revenueGrowth || 0}% dari kemarin</span>
             </div>
@@ -369,22 +368,20 @@ const AdminPanel: React.FC = () => {
             {orders.slice(0, 5).map(order => (
               <div key={order.id} className="flex items-center justify-between p-4 rounded-2xl border border-[#fff4f4] hover:bg-[#fff4f4]/50 transition-all">
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                    order.status === 'menunggu' ? 'bg-red-50 text-red-600' : 
-                    order.status === 'proses' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'
-                  }`}>
-                    {order.status === 'menunggu' ? <AlertCircle className="w-5 h-5" /> : 
-                     order.status === 'proses' ? <Clock className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${order.status === 'menunggu' ? 'bg-red-50 text-red-600' :
+                      order.status === 'proses' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'
+                    }`}>
+                    {order.status === 'menunggu' ? <AlertCircle className="w-5 h-5" /> :
+                      order.status === 'proses' ? <Clock className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
                   </div>
                   <div>
                     <p className="font-bold text-sm">Meja {order.tableNumber} - {order.id.split('-')[0]}</p>
                     <p className="text-[10px] opacity-40">{order.items?.length || 0} item • Rp {Number(order.total || 0).toLocaleString('id-ID')}</p>
                   </div>
                 </div>
-                <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest ${
-                  order.status === 'menunggu' ? 'bg-red-100 text-red-600' : 
-                  order.status === 'proses' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'
-                }`}>
+                <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest ${order.status === 'menunggu' ? 'bg-red-100 text-red-600' :
+                    order.status === 'proses' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'
+                  }`}>
                   {order.status}
                 </span>
               </div>
@@ -395,7 +392,7 @@ const AdminPanel: React.FC = () => {
         <div className="bg-white/70 backdrop-blur-lg rounded-[2.5rem] border border-white/50 p-8 shadow-xl">
           <h4 className="text-xl font-black font-plus-jakarta mb-6">Aksi Operasional</h4>
           <div className="flex gap-4">
-            <button 
+            <button
               onClick={async () => {
                 if (window.confirm('Yakin ingin membersihkan history pesanan (selesai & dibatalkan)?')) {
                   await orderService.clearHistory();
@@ -409,8 +406,8 @@ const AdminPanel: React.FC = () => {
               <Trash2 className="w-4 h-4 text-gray-500" />
               Clear History Pesanan
             </button>
-            
-            <button 
+
+            <button
               onClick={async () => {
                 if (window.confirm('PERHATIAN: Yakin ingin memulai hari baru? Semua pesanan saat ini akan dihapus dan pendapatan hari ini akan direset ke nol.')) {
                   await orderService.startNewDay();
@@ -435,9 +432,9 @@ const AdminPanel: React.FC = () => {
       <div className="flex flex-wrap items-center gap-4 mb-8 bg-white p-4 rounded-3xl border border-[#ffe1e3]">
         <div className="flex-1 min-w-[200px] relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 opacity-30" />
-          <input 
-            type="text" 
-            placeholder="Cari menu..." 
+          <input
+            type="text"
+            placeholder="Cari menu..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-[#fff4f4] border-none rounded-xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-[#b7120d]/20 transition-all"
@@ -445,7 +442,7 @@ const AdminPanel: React.FC = () => {
         </div>
         <div className="flex items-center gap-2 bg-[#fff4f4] px-4 py-3 rounded-xl border border-[#ffe1e3]/50">
           <Filter className="w-4 h-4 opacity-30" />
-          <select 
+          <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
             className="bg-transparent border-none text-sm font-bold focus:ring-0 p-0"
@@ -455,7 +452,7 @@ const AdminPanel: React.FC = () => {
           </select>
         </div>
         <div className="flex items-center gap-2 bg-[#fff4f4] px-4 py-3 rounded-none border border-[#ffe1e3]/50">
-          <select 
+          <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as any)}
             className="bg-transparent border-none text-sm font-bold focus:ring-0 p-0"
@@ -501,26 +498,24 @@ const AdminPanel: React.FC = () => {
                   <p className="font-bold text-sm">Rp {Number(item.price).toLocaleString('id-ID')}</p>
                 </td>
                 <td className="px-4 py-3">
-                  <button 
+                  <button
                     onClick={() => toggleAvailability(item.id)}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${
-                      item.isAvailable ? 'bg-[#b7120d]' : 'bg-gray-200'
-                    }`}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${item.isAvailable ? 'bg-[#b7120d]' : 'bg-gray-200'
+                      }`}
                   >
-                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
-                      item.isAvailable ? 'left-7' : 'left-1'
-                    }`} />
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${item.isAvailable ? 'left-7' : 'left-1'
+                      }`} />
                   </button>
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex justify-end gap-2">
-                    <button 
+                    <button
                       onClick={() => openEditModal(item)}
                       className="p-2 hover:bg-[#fff4f4] rounded-none transition-all text-[#a1676d]"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => deleteMenu(item.id)}
                       className="p-2 hover:bg-red-50 rounded-none transition-all text-red-600"
                     >
@@ -559,16 +554,15 @@ const AdminPanel: React.FC = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`text-[8px] font-black px-3 py-1 rounded-md uppercase tracking-[0.12em] border ${
-                    table.status === 'Terisi' 
-                    ? 'bg-red-50 text-red-600 border-red-100 animate-pulse' 
-                    : 'bg-green-50 text-green-600 border-green-100'
-                  }`}>
+                  <span className={`text-[8px] font-black px-3 py-1 rounded-md uppercase tracking-[0.12em] border ${table.status === 'Terisi'
+                      ? 'bg-red-50 text-red-600 border-red-100 animate-pulse'
+                      : 'bg-green-50 text-green-600 border-green-100'
+                    }`}>
                     {table.status}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <button 
+                  <button
                     onClick={() => removeTable(table.id)}
                     className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                   >
@@ -599,12 +593,12 @@ const AdminPanel: React.FC = () => {
       try {
         setSettingsSaving(true);
         let heroImageUrl = restaurantSettings?.heroImageUrl || '';
-        
+
         // Upload hero image if new file selected
         if (settingsHeroFile) {
           heroImageUrl = await menuService.uploadImage(settingsHeroFile);
         }
-        
+
         await apiClient.patch('/restaurant/profile', {
           heroImageUrl,
           googleMapsUrl: settingsGoogleMapsUrl,
@@ -613,12 +607,12 @@ const AdminPanel: React.FC = () => {
           openTime: settingsOpenTime,
           closeTime: settingsCloseTime,
         });
-        
-        setRestaurantSettings((prev: any) => ({ 
-          ...prev, 
-          heroImageUrl, 
-          googleMapsUrl: settingsGoogleMapsUrl, 
-          rating: settingsRating, 
+
+        setRestaurantSettings((prev: any) => ({
+          ...prev,
+          heroImageUrl,
+          googleMapsUrl: settingsGoogleMapsUrl,
+          rating: settingsRating,
           reviewCount: settingsReviewCount,
           openTime: settingsOpenTime,
           closeTime: settingsCloseTime,
@@ -644,7 +638,7 @@ const AdminPanel: React.FC = () => {
             <div className="bg-white/70 backdrop-blur-lg rounded-[2.5rem] border border-white/50 shadow-xl p-8">
               <h3 className="text-xl font-black font-plus-jakarta mb-2">Foto Hero Halaman Customer</h3>
               <p className="text-xs opacity-40 font-medium mb-6">Gambar ini ditampilkan di bagian atas halaman menu customer. Rekomendasi: 1200×400px.</p>
-              
+
               <div className="flex flex-col gap-6">
                 {/* Preview */}
                 <div className="w-full h-48 rounded-2xl overflow-hidden border-2 border-dashed border-[#ffe1e3] bg-[#fff4f4] relative">
@@ -696,7 +690,7 @@ const AdminPanel: React.FC = () => {
             <div className="bg-white/70 backdrop-blur-lg rounded-[2.5rem] border border-white/50 shadow-xl p-8">
               <h3 className="text-xl font-black font-plus-jakarta mb-2">Link Google Maps</h3>
               <p className="text-xs opacity-40 font-medium mb-6">URL ini ditampilkan sebagai tombol "Lihat di Google Maps" di halaman customer.</p>
-              
+
               <div className="space-y-4">
                 <input
                   type="url"
@@ -779,11 +773,10 @@ const AdminPanel: React.FC = () => {
         <button
           onClick={saveSettings}
           disabled={settingsSaving}
-          className={`w-full py-5 font-black text-sm uppercase tracking-[0.2em] rounded-[2rem] flex items-center justify-center gap-3 transition-all ${
-            settingsSaved
+          className={`w-full py-5 font-black text-sm uppercase tracking-[0.2em] rounded-[2rem] flex items-center justify-center gap-3 transition-all ${settingsSaved
               ? 'bg-green-500 text-white shadow-lg shadow-green-900/20'
               : 'bg-[#b7120d] text-white shadow-xl shadow-red-900/20 hover:scale-[1.01] active:scale-[0.99]'
-          } disabled:opacity-60 disabled:scale-100`}
+            } disabled:opacity-60 disabled:scale-100`}
         >
           {settingsSaving ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</>
@@ -800,7 +793,7 @@ const AdminPanel: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#fff4f4] flex font-be-vietnam text-[#4d2127] relative overflow-hidden">
       {/* Background Image Layer with Opacity */}
-      <div 
+      <div
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none opacity-20"
         style={{ backgroundImage: 'url("/fotobackground.png")' }}
       ></div>
@@ -813,9 +806,9 @@ const AdminPanel: React.FC = () => {
 
         <nav className="space-y-2 flex-1 overflow-y-auto no-scrollbar relative">
           {/* Sliding Indicator */}
-          <div 
+          <div
             className="absolute left-0 right-0 h-11 bg-[#b7120d] rounded-2xl transition-all duration-400 shadow-lg shadow-red-900/20"
-            style={{ 
+            style={{
               transform: `translateY(${activeIndex * (44 + 8)}px)`,
               top: '0px',
               transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)'
@@ -823,21 +816,19 @@ const AdminPanel: React.FC = () => {
           />
 
           {navItems.map((item) => (
-            <button 
+            <button
               key={item.id}
               onClick={() => setActiveTab(item.id as any)}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all relative z-10 ${
-                activeTab === item.id ? 'text-white' : 'hover:bg-[#fff4f4] text-[#4d2127] opacity-60 hover:opacity-100'
-              }`}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all relative z-10 ${activeTab === item.id ? 'text-white' : 'hover:bg-[#fff4f4] text-[#4d2127] opacity-60 hover:opacity-100'
+                }`}
             >
               <div className="flex items-center gap-4">
                 <item.icon className={`w-5 h-5 transition-transform duration-500 ${activeTab === item.id ? 'scale-110' : ''}`} />
                 <span className="text-sm font-bold">{item.label}</span>
               </div>
               {item.badge && orders.filter(o => o.status === 'Baru').length > 0 && (
-                <span className={`text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center transition-colors duration-500 ${
-                  activeTab === item.id ? 'bg-white text-[#b7120d]' : 'bg-red-500 text-white'
-                }`}>
+                <span className={`text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center transition-colors duration-500 ${activeTab === item.id ? 'bg-white text-[#b7120d]' : 'bg-red-500 text-white'
+                  }`}>
                   {orders.filter(o => o.status === 'Baru').length}
                 </span>
               )}
@@ -847,11 +838,11 @@ const AdminPanel: React.FC = () => {
         </nav>
 
         <div className="pt-8 border-t border-[#ffe1e3]">
-          <button 
+          <button
             onClick={async () => {
               try {
                 await apiClient.post('/sign-out');
-              } catch (e) {}
+              } catch (e) { }
               window.location.href = '/login';
             }}
             className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-red-50 text-red-600 transition-all"
@@ -873,16 +864,16 @@ const AdminPanel: React.FC = () => {
               <span className="text-[#b7120d]">{activeTab}</span>
             </div>
             <h2 className="text-4xl font-black font-plus-jakarta tracking-tight capitalize">
-              {activeTab === 'dashboard' ? 'Overview Dashboard' : 
-               activeTab === 'menu' ? 'Manajemen Menu' : 
-               activeTab === 'orders' ? 'Antrean Pesanan' : 
-               activeTab === 'tables' ? 'Denah & Status Meja' :
-               activeTab === 'settings' ? 'Pengaturan Restoran' : 'Manajemen Kategori'}
+              {activeTab === 'dashboard' ? 'Overview Dashboard' :
+                activeTab === 'menu' ? 'Manajemen Menu' :
+                  activeTab === 'orders' ? 'Antrean Pesanan' :
+                    activeTab === 'tables' ? 'Denah & Status Meja' :
+                      activeTab === 'settings' ? 'Pengaturan Restoran' : 'Manajemen Kategori'}
             </h2>
           </div>
           <div className="flex items-center gap-4">
             {activeTab !== 'settings' && (
-              <button 
+              <button
                 onClick={() => setIsSelectionModalOpen(true)}
                 className="bg-[#b7120d] text-white px-8 py-3 rounded-none font-black text-xs tracking-widest flex items-center gap-2 shadow-lg shadow-red-900/20 hover:scale-105 active:scale-95 transition-all"
               >
@@ -901,12 +892,12 @@ const AdminPanel: React.FC = () => {
         {/* Selection Modal */}
         {isSelectionModalOpen && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center">
-            <div 
+            <div
               className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"
               onClick={() => setIsSelectionModalOpen(false)}
             ></div>
             <div className="relative bg-[#b7120d] text-white w-64 shadow-2xl flex flex-col p-2 animate-fade-in rounded-none">
-              <button 
+              <button
                 onClick={() => {
                   setIsSelectionModalOpen(false);
                   setIsAddModalOpen(true);
@@ -915,7 +906,7 @@ const AdminPanel: React.FC = () => {
               >
                 Tambah Menu
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setIsSelectionModalOpen(false);
                   setIsCategoryModalOpen(true);
@@ -924,7 +915,7 @@ const AdminPanel: React.FC = () => {
               >
                 Tambah Kategori
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setIsSelectionModalOpen(false);
                   setIsTableModalOpen(true);
@@ -940,7 +931,7 @@ const AdminPanel: React.FC = () => {
         {/* Add Category Modal (Simplified) */}
         {isCategoryModalOpen && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
-            <div 
+            <div
               className="absolute inset-0 bg-black/40 backdrop-blur-sm"
               onClick={() => setIsCategoryModalOpen(false)}
             ></div>
@@ -953,14 +944,14 @@ const AdminPanel: React.FC = () => {
               </div>
 
               <div className="flex gap-2 mb-8">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder="Nama Kategori..."
                   className="flex-1 bg-[#fff4f4] border-none px-4 py-3 rounded-2xl text-sm font-bold"
                   value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e.target.value)}
                 />
-                <button 
+                <button
                   onClick={addCategory}
                   className="bg-[#b7120d] text-white p-3 rounded-2xl"
                 >
@@ -972,7 +963,7 @@ const AdminPanel: React.FC = () => {
                 {categories.map(cat => (
                   <div key={cat} className="flex items-center justify-between p-4 bg-[#fff4f4] rounded-2xl">
                     <span className="text-sm font-bold">{cat}</span>
-                    <button 
+                    <button
                       onClick={() => removeCategory(cat)}
                       className="text-red-500 opacity-40 hover:opacity-100"
                     >
@@ -988,7 +979,7 @@ const AdminPanel: React.FC = () => {
         {/* Add Table Modal */}
         {isTableModalOpen && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
-            <div 
+            <div
               className="absolute inset-0 bg-black/40 backdrop-blur-sm"
               onClick={() => {
                 setIsTableModalOpen(false);
@@ -998,11 +989,11 @@ const AdminPanel: React.FC = () => {
             <div className="relative bg-white w-full max-w-sm rounded-md shadow-2xl overflow-hidden p-10 animate-modal-up">
               <div className="flex items-center justify-between mb-8">
                 <h3 className="text-xl font-black font-plus-jakarta uppercase tracking-tighter">Tambah Meja</h3>
-                <button 
+                <button
                   onClick={() => {
                     setIsTableModalOpen(false);
                     setIsQrGenerated(false);
-                  }} 
+                  }}
                   className="opacity-40 hover:opacity-100"
                 >
                   <X className="w-5 h-5" />
@@ -1010,8 +1001,8 @@ const AdminPanel: React.FC = () => {
               </div>              <div className="space-y-6">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black opacity-30 uppercase tracking-widest ml-1">Nomor Meja</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="Contoh: 1, 2, A1, B5"
                     className="w-full bg-[#fff4f4] border-none px-6 py-4 text-lg font-black rounded-2xl focus:ring-2 focus:ring-[#b7120d]/20 transition-all"
                     value={newTableNumber}
@@ -1019,7 +1010,7 @@ const AdminPanel: React.FC = () => {
                   />
                 </div>
 
-                <button 
+                <button
                   onClick={addTable}
                   disabled={!newTableNumber.trim()}
                   className="w-full bg-[#b7120d] text-white py-4 rounded-2xl font-black text-[11px] tracking-[0.2em] uppercase hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-red-900/20 disabled:opacity-50 disabled:scale-100"
@@ -1035,15 +1026,15 @@ const AdminPanel: React.FC = () => {
         {isAddModalOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
             {/* Backdrop */}
-            <div 
+            <div
               className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in"
               onClick={() => setIsAddModalOpen(false)}
             ></div>
-            
+
             {/* Modal Box */}
             <div className="relative bg-white w-full max-w-2xl rounded-md shadow-2xl overflow-hidden animate-modal-up flex flex-col md:flex-row h-[80vh]">
               {/* Close Button */}
-              <button 
+              <button
                 onClick={() => {
                   setIsAddModalOpen(false);
                   setEditingMenuId(null);
@@ -1070,15 +1061,15 @@ const AdminPanel: React.FC = () => {
                         </>
                       )}
                     </div>
-                    <input 
-                      type="file" 
-                      className="hidden" 
+                    <input
+                      type="file"
+                      className="hidden"
                       accept="image/*"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
                           setNewItem({
-                            ...newItem, 
+                            ...newItem,
                             imagePreview: URL.createObjectURL(file),
                             imageFile: file
                           });
@@ -1087,7 +1078,7 @@ const AdminPanel: React.FC = () => {
                     />
                   </label>
                   <p className="text-[9px] mt-4 opacity-40 leading-relaxed font-medium">
-                    Format: JPG, PNG, WEBP<br/>Maksimal 2MB
+                    Format: JPG, PNG, WEBP<br />Maksimal 2MB
                   </p>
                 </div>
               </div>
@@ -1097,48 +1088,48 @@ const AdminPanel: React.FC = () => {
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mb-6">
                   {editingMenuId ? 'Edit Informasi' : 'Informasi Dasar'}
                 </p>
-                
+
                 <div className="space-y-6">
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black opacity-30 uppercase tracking-widest ml-1">Nama Menu</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder="Contoh: Ayam Bakar Madu"
                       className="w-full bg-[#fff4f4] border-none px-4 py-3 text-sm font-medium rounded-2xl focus:ring-2 focus:ring-[#b7120d]/20 transition-all"
                       value={newItem.name}
-                      onChange={(e) => setNewItem({...newItem, name: e.target.value})}
+                      onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black opacity-30 uppercase tracking-widest ml-1">Deskripsi</label>
-                    <textarea 
+                    <textarea
                       placeholder="Jelaskan kelezatan menu ini..."
                       rows={4}
                       className="w-full bg-[#fff4f4] border-none px-4 py-3 text-sm font-medium rounded-2xl focus:ring-2 focus:ring-[#b7120d]/20 transition-all resize-none"
                       value={newItem.description}
-                      onChange={(e) => setNewItem({...newItem, description: e.target.value})}
+                      onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
                     />
                   </div>
 
                   <div className="grid grid-cols-1 gap-6">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black opacity-30 uppercase tracking-widest ml-1">Harga (Rp)</label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         placeholder="0"
                         className="w-full bg-[#fff4f4] border-none px-4 py-3 text-sm font-bold rounded-2xl focus:ring-2 focus:ring-[#b7120d]/20 transition-all"
                         value={newItem.price}
-                        onChange={(e) => setNewItem({...newItem, price: e.target.value})}
+                        onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
                       />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black opacity-30 uppercase tracking-widest ml-1">Kategori</label>
                       <div className="bg-[#fff4f4] px-4 py-3 rounded-2xl">
-                        <select 
+                        <select
                           className="w-full bg-transparent border-none text-sm font-bold focus:ring-0 p-0"
                           value={newItem.category}
-                          onChange={(e) => setNewItem({...newItem, category: e.target.value})}
+                          onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
                         >
                           {categories.map(c => (
                             <option key={c} value={c}>{c}</option>
@@ -1154,7 +1145,7 @@ const AdminPanel: React.FC = () => {
               <div className="w-full md:flex-1 p-8 flex flex-col bg-gray-50/50 overflow-y-auto no-scrollbar">
                 <div className="flex items-center justify-between mb-6">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Opsi & Varian Menu</p>
-                  <button 
+                  <button
                     onClick={addOptionGroup}
                     className="flex items-center gap-2 text-[10px] font-black text-[#b7120d] bg-white border border-[#ffe1e3] px-3 py-1.5 rounded-full hover:bg-red-50 transition-colors shadow-sm"
                   >
@@ -1169,7 +1160,7 @@ const AdminPanel: React.FC = () => {
                       <Settings className="w-6 h-6 opacity-20" />
                     </div>
                     <p className="text-xs font-bold opacity-40 leading-relaxed">
-                      Belum ada opsi.<br/>Tambahkan seperti "Level Pedas" atau "Pilihan Bagian".
+                      Belum ada opsi.<br />Tambahkan seperti "Level Pedas" atau "Pilihan Bagian".
                     </p>
                   </div>
                 ) : (
@@ -1177,14 +1168,14 @@ const AdminPanel: React.FC = () => {
                     {newItem.options.map((option) => (
                       <div key={option.id} className="bg-white p-6 rounded-[2rem] border border-[#ffe1e3] shadow-sm animate-in fade-in slide-in-from-right-4 duration-300">
                         <div className="flex items-center justify-between mb-4">
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             placeholder="Nama Opsi (Contoh: Level Pedas)"
                             className="bg-transparent border-none p-0 text-sm font-black focus:ring-0 placeholder:opacity-20 w-2/3"
                             value={option.name}
                             onChange={(e) => updateOptionName(option.id, e.target.value)}
                           />
-                          <button 
+                          <button
                             onClick={() => removeOptionGroup(option.id)}
                             className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           >
@@ -1196,15 +1187,15 @@ const AdminPanel: React.FC = () => {
                           {option.choices.map((choice, cIndex) => (
                             <div key={cIndex} className="flex items-center gap-2">
                               <div className="flex-1 relative">
-                                <input 
-                                  type="text" 
+                                <input
+                                  type="text"
                                   placeholder={`Pilihan ${cIndex + 1}`}
                                   className="w-full bg-[#fff4f4] border-none px-4 py-2 text-xs font-bold rounded-xl focus:ring-2 focus:ring-[#b7120d]/10 transition-all"
                                   value={choice}
                                   onChange={(e) => updateChoice(option.id, cIndex, e.target.value)}
                                 />
                                 {option.choices.length > 1 && (
-                                  <button 
+                                  <button
                                     onClick={() => removeChoice(option.id, cIndex)}
                                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-300 hover:text-red-500 transition-colors"
                                   >
@@ -1214,7 +1205,7 @@ const AdminPanel: React.FC = () => {
                               </div>
                             </div>
                           ))}
-                          <button 
+                          <button
                             onClick={() => addChoice(option.id)}
                             className="flex items-center gap-2 text-[9px] font-bold text-[#b7120d]/60 hover:text-[#b7120d] transition-colors ml-1 mt-2"
                           >
@@ -1228,13 +1219,13 @@ const AdminPanel: React.FC = () => {
                 )}
 
                 <div className="mt-8 pt-8 border-t border-[#ffe1e3] flex gap-4">
-                  <button 
+                  <button
                     onClick={() => setIsAddModalOpen(false)}
                     className="flex-1 py-4 text-[11px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-all"
                   >
                     Batal
                   </button>
-                  <button 
+                  <button
                     onClick={addMenu}
                     className="flex-[2] bg-[#b7120d] text-white py-4 text-[11px] font-black uppercase tracking-widest shadow-xl shadow-red-900/20 active:scale-95 transition-all hover:bg-[#a0100b] rounded-2xl"
                   >
@@ -1247,7 +1238,8 @@ const AdminPanel: React.FC = () => {
         )}
       </main>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .no-scrollbar::-webkit-scrollbar {
           display: none;
         }

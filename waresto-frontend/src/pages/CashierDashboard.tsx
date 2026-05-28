@@ -231,16 +231,16 @@ const CashierDashboard: React.FC = () => {
             ))}
           </div>
           <button onClick={async () => {
-              if (window.confirm('Yakin ingin membersihkan pesanan selesai & dibatalkan?')) {
-                try {
-                  await orderService.clearHistory();
-                  alert('Pesanan berhasil dibersihkan');
-                  fetchData();
-                } catch (e) {
-                  alert('Gagal membersihkan pesanan');
-                }
+            if (window.confirm('Yakin ingin membersihkan pesanan selesai & dibatalkan?')) {
+              try {
+                await orderService.clearHistory();
+                alert('Pesanan berhasil dibersihkan');
+                fetchData();
+              } catch (e) {
+                alert('Gagal membersihkan pesanan');
               }
-            }}
+            }
+          }}
             className="bg-white text-[#4d2127] border border-[#ffe1e3] px-5 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-[#fff4f4] transition-all">
             <Trash2 className="w-4 h-4" /> Bersihkan
           </button>
@@ -270,11 +270,10 @@ const CashierDashboard: React.FC = () => {
                           MEJA {getTableNumber(order)}
                         </span>
                         {/* Order Type Badge */}
-                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
-                          order.type === 'take_away' || order.type === 'takeaway'
+                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${order.type === 'take_away' || order.type === 'takeaway'
                             ? (order.status === 'menunggu' ? 'bg-white/20 text-white' : 'bg-orange-50 text-orange-600')
                             : (order.status === 'menunggu' ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600')
-                        }`}>
+                          }`}>
                           {order.type === 'take_away' || order.type === 'takeaway' ? '🥡 Bungkus' : '🍽️ Di Tempat'}
                         </span>
                         {order.status === 'menunggu' && (
